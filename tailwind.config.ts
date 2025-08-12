@@ -61,7 +61,40 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				community: {
+					primary: 'hsl(var(--community-primary))',
+					'primary-hover': 'hsl(var(--community-primary-hover))',
+					secondary: 'hsl(var(--community-secondary))',
+					accent: 'hsl(var(--community-accent))',
+					warning: 'hsl(var(--community-warning))',
+					success: 'hsl(var(--community-success))'
+				},
+				services: {
+					rides: 'hsl(var(--rides-color))',
+					accommodations: 'hsl(var(--accommodations-color))',
+					travel: 'hsl(var(--travel-color))',
+					remittance: 'hsl(var(--remittance-color))',
+					fundraise: 'hsl(var(--fundraise-color))',
+					querypedia: 'hsl(var(--querypedia-color))',
+					parcel: 'hsl(var(--parcel-color))',
+					deals: 'hsl(var(--deals-color))',
+					freeitems: 'hsl(var(--freeitems-color))'
 				}
+			},
+			backgroundImage: {
+				'gradient-primary': 'var(--gradient-primary)',
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-card': 'var(--gradient-card)'
+			},
+			boxShadow: {
+				'glow': 'var(--shadow-glow)',
+				'card': 'var(--shadow-card)',
+				'service': 'var(--shadow-service)'
+			},
+			transitionTimingFunction: {
+				'smooth': 'var(--transition-smooth)',
+				'spring': 'var(--transition-spring)'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
