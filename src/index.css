@@ -47,15 +47,12 @@ All colors MUST be HSL.
     --community-success: 142 76% 36%;
     
     /* Service Colors */
-    --rides-color: 217 91% 60%;
     --accommodations-color: 25 95% 53%;
     --travel-color: 262 83% 58%;
-    --remittance-color: 142 76% 36%;
-    --fundraise-color: 0 84% 60%;
     --querypedia-color: 280 100% 70%;
-    --parcel-color: 35 77% 49%;
     --deals-color: 339 82% 52%;
     --freeitems-color: 160 60% 45%;
+    --health-color: 340 100% 50%;
     
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(var(--community-primary)), hsl(var(--community-secondary)));

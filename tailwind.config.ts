@@ -71,15 +71,12 @@ export default {
 					success: 'hsl(var(--community-success))'
 				},
 				services: {
-					rides: 'hsl(var(--rides-color))',
 					accommodations: 'hsl(var(--accommodations-color))',
 					travel: 'hsl(var(--travel-color))',
-					remittance: 'hsl(var(--remittance-color))',
-					fundraise: 'hsl(var(--fundraise-color))',
 					querypedia: 'hsl(var(--querypedia-color))',
-					parcel: 'hsl(var(--parcel-color))',
 					deals: 'hsl(var(--deals-color))',
-					freeitems: 'hsl(var(--freeitems-color))'
+					freeitems: 'hsl(var(--freeitems-color))',
+					health: 'hsl(var(--health-color))'
 				}
 			},
 			backgroundImage: {

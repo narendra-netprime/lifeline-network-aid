@@ -17,12 +17,14 @@ interface HeaderProps {
     avatar?: string;
   };
   notificationCount?: number;
+  onLocationSettings?: () => void;
 }
 
 export function Header({ 
   siteName = "CommunityHub", 
   user = { name: "John Doe", email: "john@example.com" },
-  notificationCount = 3 
+  notificationCount = 3,
+  onLocationSettings
 }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -81,7 +83,7 @@ export function Header({
                 <User className="mr-2 h-4 w-4" />
                 View Profile
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={onLocationSettings}>
                 <Settings className="mr-2 h-4 w-4" />
                 Location Settings
               </DropdownMenuItem>

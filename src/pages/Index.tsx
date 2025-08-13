@@ -10,7 +10,8 @@ import {
   Plane,
   Scale,
   Tag,
-  Gift
+  Gift,
+  Shield
 } from "lucide-react";
 
 interface LocationPreferences {
@@ -48,11 +49,11 @@ const services: Service[] = [
     type: "chat"
   },
   {
-    id: "querypedia",
-    title: "Querypedia",
+    id: "confessions",
+    title: "Confessions",
     icon: Scale,
     color: "services-querypedia",
-    description: "Ask questions and get community answers",
+    description: "Share your thoughts and get community support",
     type: "forum" 
   },
   {
@@ -70,6 +71,14 @@ const services: Service[] = [
     color: "services-freeitems",
     description: "Give away and find free items in your community", 
     type: "chat"
+  },
+  {
+    id: "healthservices",
+    title: "Health & Legal Services",
+    icon: Shield,
+    color: "services-health",
+    description: "Health insurance, auto services, and attorney consultations",
+    type: "forum"
   }
 ];
 
@@ -140,7 +149,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header onLocationSettings={handleLocationSettings} />
       
       <div className="flex">
         <NotificationsSidebar />
