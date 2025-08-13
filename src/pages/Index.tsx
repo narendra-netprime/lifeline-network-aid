@@ -2,28 +2,24 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { NotificationsSidebar } from "@/components/NotificationsSidebar";
 import { ServiceCard } from "@/components/ServiceCard";
-import { LocationFilter } from "@/components/LocationFilter";
+import { NewsSection } from "@/components/NewsSection";
 import { ServiceInterface } from "@/components/ServiceInterface";
+import { LocationSettings } from "@/components/LocationSettings";
 import {
-  Car,
   Home,
   Plane,
-  DollarSign,
-  Heart,
   Scale,
-  Package,
   Tag,
   Gift
 } from "lucide-react";
 
-interface LocationFilters {
-  country: string;
+interface LocationPreferences {
   state: string;
   city: string;
   distance: string;
 }
 
-type ViewState = 'home' | 'locationFilter' | 'serviceInterface';
+type ViewState = 'home' | 'serviceInterface' | 'locationSettings';
 
 interface Service {
   id: string;
@@ -35,14 +31,6 @@ interface Service {
 }
 
 const services: Service[] = [
-  {
-    id: "rides",
-    title: "Rides",
-    icon: Car,
-    color: "services-rides",
-    description: "Find ride shares and carpools in your area",
-    type: "chat"
-  },
   {
     id: "accommodations", 
     title: "Accommodations",
@@ -60,36 +48,12 @@ const services: Service[] = [
     type: "chat"
   },
   {
-    id: "remittance",
-    title: "Remittance", 
-    icon: DollarSign,
-    color: "services-remittance",
-    description: "Safe money exchange and transfer services",
-    type: "chat"
-  },
-  {
-    id: "fundraise",
-    title: "Fund Raise",
-    icon: Heart,
-    color: "services-fundraise", 
-    description: "Create and support emergency fundraisers",
-    type: "forum"
-  },
-  {
     id: "querypedia",
     title: "Querypedia",
     icon: Scale,
     color: "services-querypedia",
     description: "Ask questions and get community answers",
     type: "forum" 
-  },
-  {
-    id: "parcel",
-    title: "Parcel",
-    icon: Package,
-    color: "services-parcel",
-    description: "Package delivery and transport services",
-    type: "chat"
   },
   {
     id: "deals",
@@ -112,8 +76,7 @@ const services: Service[] = [
 const Index = () => {
   const [currentView, setCurrentView] = useState<ViewState>('home');
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [appliedFilters, setAppliedFilters] = useState<LocationFilters>({
-    country: "",
+  const [locationPreferences, setLocationPreferences] = useState<LocationPreferences>({
     state: "", 
     city: "",
     distance: ""
@@ -121,31 +84,46 @@ const Index = () => {
 
   const handleServiceClick = (service: Service) => {
     setSelectedService(service);
-    setCurrentView('locationFilter');
-  };
-
-  const handleFiltersApplied = (filters: LocationFilters) => {
-    setAppliedFilters(filters);
     setCurrentView('serviceInterface');
   };
 
-  const handleBack = () => {
-    if (currentView === 'serviceInterface') {
-      setCurrentView('locationFilter');
-    } else {
-      setCurrentView('home');
-      setSelectedService(null);
-      setAppliedFilters({ country: "", state: "", city: "", distance: "" });
-    }
+  const handleLocationSettings = () => {
+    setCurrentView('locationSettings');
   };
 
-  if (currentView === 'locationFilter' && selectedService) {
+  const handleLocationSave = (preferences: LocationPreferences) => {
+    setLocationPreferences(preferences);
+    setCurrentView('home');
+  };
+
+  const handleBack = () => {
+    setCurrentView('home');
+    setSelectedService(null);
+  };
+
+  if (currentView === 'locationSettings') {
     return (
-      <LocationFilter
-        serviceName={selectedService.title}
-        onBack={handleBack}
-        onApplyFilters={handleFiltersApplied}
-      />
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container py-6 px-6">
+          <div className="max-w-2xl mx-auto">
+            <div className="mb-6">
+              <button 
+                onClick={handleBack}
+                className="text-community-primary hover:underline mb-4"
+              >
+                ← Back to Home
+              </button>
+              <h1 className="text-2xl font-bold">Location Settings</h1>
+              <p className="text-muted-foreground">Manage your location preferences for all services</p>
+            </div>
+            <LocationSettings 
+              onSave={handleLocationSave}
+              currentPreferences={locationPreferences}
+            />
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -155,7 +133,7 @@ const Index = () => {
         serviceName={selectedService.title}
         serviceType={selectedService.type}
         onBack={handleBack}
-        appliedFilters={appliedFilters}
+        appliedFilters={locationPreferences}
       />
     );
   }
@@ -176,23 +154,29 @@ const Index = () => {
                 Welcome to CommunityHub
               </h1>
               <p className="text-muted-foreground">
-                Connect, share, and support your local community
+                Connect, share, and support your Indian community in the USA
               </p>
             </div>
 
+            {/* News Section */}
+            <NewsSection />
+
             {/* Services Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {services.map((service) => (
-                <ServiceCard
-                  key={service.id}
-                  id={service.id}
-                  title={service.title}
-                  icon={service.icon}
-                  color={service.color}
-                  description={service.description}
-                  onClick={() => handleServiceClick(service)}
-                />
-              ))}
+            <div>
+              <h2 className="text-2xl font-bold mb-6">Community Services</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {services.map((service) => (
+                  <ServiceCard
+                    key={service.id}
+                    id={service.id}
+                    title={service.title}
+                    icon={service.icon}
+                    color={service.color}
+                    description={service.description}
+                    onClick={() => handleServiceClick(service)}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Footer Note */}

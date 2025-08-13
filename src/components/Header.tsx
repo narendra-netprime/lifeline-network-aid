@@ -83,6 +83,10 @@ export function Header({
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Settings className="mr-2 h-4 w-4" />
+                Location Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Settings className="mr-2 h-4 w-4" />
                 Change Password
               </DropdownMenuItem>
               <DropdownMenuItem className="text-red-600">
