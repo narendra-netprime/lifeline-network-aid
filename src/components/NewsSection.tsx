@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Clock, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
+import { ExternalLink, Clock, ChevronLeft, ChevronRight, ArrowLeft, RefreshCw } from "lucide-react";
+import { NewsService } from "@/utils/newsService";
 
 interface NewsItem {
   id: string;
@@ -12,58 +13,50 @@ interface NewsItem {
   timestamp: string;
   url: string;
   category: string;
+  content?: string;
 }
 
-// Mock news data for Indian people in USA
-const mockNews: NewsItem[] = [
-  {
-    id: "1",
-    title: "New H-1B Policy Changes Announced for 2024",
-    summary: "USCIS announces significant updates to H-1B visa processing that will affect thousands of Indian professionals in the US.",
-    source: "Immigration News",
-    timestamp: "2 hours ago",
-    url: "#",
-    category: "Immigration"
-  },
-  {
-    id: "2", 
-    title: "Indian Festival Celebrations Across Major US Cities",
-    summary: "Diwali celebrations are planned in New York, California, and Texas with community gatherings and cultural events.",
-    source: "Community News",
-    timestamp: "5 hours ago",
-    url: "#",
-    category: "Culture"
-  },
-  {
-    id: "3",
-    title: "New Indo-US Trade Agreement Benefits Indian Businesses",
-    summary: "The latest trade agreement opens new opportunities for Indian entrepreneurs and small businesses in America.",
-    source: "Business Today",
-    timestamp: "1 day ago", 
-    url: "#",
-    category: "Business"
-  }
-];
 
 export function NewsSection() {
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load news on component mount
+  useEffect(() => {
+    loadNews();
+  }, []);
 
   // Auto-scroll news every 3 seconds
   useEffect(() => {
+    if (news.length === 0) return;
+    
     const interval = setInterval(() => {
-      setCurrentNewsIndex((prev) => (prev + 1) % mockNews.length);
+      setCurrentNewsIndex((prev) => (prev + 1) % news.length);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [news]);
+
+  const loadNews = async () => {
+    try {
+      setLoading(true);
+      const fetchedNews = await NewsService.fetchLatestNews();
+      setNews(fetchedNews);
+    } catch (error) {
+      console.error('Failed to load news:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePrevious = () => {
-    setCurrentNewsIndex((prev) => (prev - 1 + mockNews.length) % mockNews.length);
+    setCurrentNewsIndex((prev) => (prev - 1 + news.length) % news.length);
   };
 
   const handleNext = () => {
-    setCurrentNewsIndex((prev) => (prev + 1) % mockNews.length);
+    setCurrentNewsIndex((prev) => (prev + 1) % news.length);
   };
 
   const handleNewsClick = (news: NewsItem) => {
@@ -76,7 +69,7 @@ export function NewsSection() {
 
   // Full screen news view
   if (selectedNews) {
-    const otherNews = mockNews.filter(news => news.id !== selectedNews.id);
+    const otherNews = news.filter(newsItem => newsItem.id !== selectedNews.id);
     
     return (
       <div className="mb-8">
@@ -113,14 +106,14 @@ export function NewsSection() {
           <CardContent className="space-y-6">
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="text-base leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                {selectedNews.content || selectedNews.summary}
               </p>
-              <p className="text-base leading-relaxed">
-                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-              </p>
-              <p className="text-base leading-relaxed">
-                Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.
-              </p>
+              {selectedNews.content && selectedNews.content !== selectedNews.summary && (
+                <p className="text-base leading-relaxed mt-4">
+                  This story continues to develop as immigration policies and community initiatives evolve. 
+                  Stay tuned for more updates on how these changes affect the Indian community in the United States.
+                </p>
+              )}
             </div>
             
             <div className="flex items-center justify-between pt-4 border-t">
@@ -143,30 +136,30 @@ export function NewsSection() {
         <div className="mt-8">
           <h3 className="text-xl font-bold mb-4">Other Recent News</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {otherNews.slice(0, 4).map((news) => (
+            {otherNews.slice(0, 4).map((newsItem) => (
               <Card 
-                key={news.id} 
+                key={newsItem.id} 
                 className="bg-gradient-card hover:shadow-card transition-all duration-300 group cursor-pointer"
-                onClick={() => handleNewsClick(news)}
+                onClick={() => handleNewsClick(newsItem)}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between mb-2">
                     <Badge variant="secondary" className="text-xs">
-                      {news.category}
+                      {newsItem.category}
                     </Badge>
                     <div className="flex items-center text-xs text-muted-foreground">
                       <Clock className="h-3 w-3 mr-1" />
-                      {news.timestamp}
+                      {newsItem.timestamp}
                     </div>
                   </div>
                   <CardTitle className="text-lg leading-tight group-hover:text-community-primary transition-colors">
-                    {news.title}
+                    {newsItem.title}
                   </CardTitle>
                 </CardHeader>
                 
                 <CardContent className="pt-0">
                   <p className="text-sm text-muted-foreground line-clamp-2">
-                    {news.summary}
+                    {newsItem.summary}
                   </p>
                 </CardContent>
               </Card>
@@ -177,8 +170,58 @@ export function NewsSection() {
     );
   }
 
+  // Loading state
+  if (loading) {
+    return (
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              Latest News for Indians in USA
+            </h2>
+            <p className="text-muted-foreground mt-1">
+              Loading latest H1B, OPT, and Indian community news...
+            </p>
+          </div>
+        </div>
+        <Card className="bg-gradient-card animate-pulse">
+          <CardHeader className="pb-4">
+            <div className="h-4 bg-muted rounded w-1/4 mb-3"></div>
+            <div className="h-8 bg-muted rounded w-3/4 mb-4"></div>
+          </CardHeader>
+          <CardContent>
+            <div className="h-4 bg-muted rounded w-full mb-2"></div>
+            <div className="h-4 bg-muted rounded w-2/3"></div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // No news available
+  if (news.length === 0) {
+    return (
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              Latest News for Indians in USA
+            </h2>
+            <p className="text-muted-foreground mt-1">
+              No news available at the moment
+            </p>
+          </div>
+          <Button variant="outline" onClick={loadNews}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   // Carousel view
-  const currentNews = mockNews[currentNewsIndex];
+  const currentNews = news[currentNewsIndex];
 
   return (
     <div className="mb-8">
@@ -188,9 +231,13 @@ export function NewsSection() {
             Latest News for Indians in USA
           </h2>
           <p className="text-muted-foreground mt-1">
-            Stay updated with community news, immigration updates, and cultural events
+            H1B, OPT, Student Visas & Indian Community Updates
           </p>
         </div>
+        <Button variant="outline" size="sm" onClick={loadNews}>
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh
+        </Button>
       </div>
 
       {/* Single News Carousel */}
@@ -248,7 +295,7 @@ export function NewsSection() {
             <div className="flex items-center space-x-3">
               {/* Progress indicators */}
               <div className="flex space-x-1">
-                {mockNews.map((_, index) => (
+                {news.map((_, index) => (
                   <div
                     key={index}
                     className={`h-2 w-2 rounded-full transition-all duration-300 cursor-pointer ${

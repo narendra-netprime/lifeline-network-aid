@@ -65,11 +65,11 @@ const services: Service[] = [
     type: "deals"
   },
   {
-    id: "freeitems",
-    title: "Free Items",
+    id: "marketplace",
+    title: "Market Place",
     icon: Gift,
     color: "services-freeitems",
-    description: "Give away and find free items in your community", 
+    description: "Buy, sell, and trade items within your community", 
     type: "chat"
   },
   {
