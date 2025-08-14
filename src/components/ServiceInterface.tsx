@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   ArrowLeft, 
   Send, 
@@ -14,7 +15,10 @@ import {
   Heart, 
   Share2,
   Plus,
-  Search
+  Search,
+  Car,
+  Heart as HealthIcon,
+  Scale
 } from "lucide-react";
 
 interface ServiceInterfaceProps {
@@ -38,7 +42,65 @@ interface Post {
   isOwn?: boolean;
 }
 
-const mockPosts: Post[] = [
+const mockPostsByTab = {
+  auto: [
+    {
+      id: "auto-1",
+      user: { name: "Raj Patel" },
+      content: "Looking for recommendations for a reliable mechanic in San Jose area. My car needs major transmission work.",
+      timestamp: "1 hour ago",
+      likes: 4,
+      comments: 6
+    },
+    {
+      id: "auto-2", 
+      user: { name: "Priya Sharma" },
+      content: "Selling my 2019 Honda Civic - excellent condition, low mileage. Moving back to India next month. $18,000 OBO",
+      timestamp: "3 hours ago",
+      likes: 12,
+      comments: 8,
+      image: "/placeholder.svg"
+    }
+  ],
+  health: [
+    {
+      id: "health-1",
+      user: { name: "Dr. Amit Singh" },
+      content: "Open enrollment period starts next month. Happy to answer questions about health insurance options for H1B holders.",
+      timestamp: "30 minutes ago",
+      likes: 15,
+      comments: 9
+    },
+    {
+      id: "health-2",
+      user: { name: "Neha Gupta" },
+      content: "Does anyone know good primary care physicians in Austin who understand Indian dietary preferences and cultural needs?",
+      timestamp: "2 hours ago",
+      likes: 7,
+      comments: 12
+    }
+  ],
+  legal: [
+    {
+      id: "legal-1",
+      user: { name: "Attorney Smith" },
+      content: "Free consultation available for H1B to Green Card process questions. Send me a message for appointment scheduling.",
+      timestamp: "45 minutes ago", 
+      likes: 22,
+      comments: 15
+    },
+    {
+      id: "legal-2",
+      user: { name: "Vikram Reddy" },
+      content: "Successfully got my EB-2 approved! Happy to share my experience and timeline with anyone going through the process.",
+      timestamp: "4 hours ago",
+      likes: 35,
+      comments: 18
+    }
+  ]
+};
+
+const generalMockPosts: Post[] = [
   {
     id: "1",
     user: { name: "Alex Rivera" },
@@ -69,6 +131,7 @@ const mockPosts: Post[] = [
 export function ServiceInterface({ serviceName, serviceType, onBack, appliedFilters }: ServiceInterfaceProps) {
   const [newPost, setNewPost] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("auto");
 
   const handlePost = () => {
     if (newPost.trim()) {
@@ -82,6 +145,135 @@ export function ServiceInterface({ serviceName, serviceType, onBack, appliedFilt
     // Here you would open a private chat modal/page
     console.log("Opening chat with:", userName);
   };
+
+  const isHealthService = serviceName === "Health & Legal Services";
+  const currentPosts = isHealthService ? mockPostsByTab[activeTab as keyof typeof mockPostsByTab] : generalMockPosts;
+
+  const renderPostsSection = (posts: Post[]) => (
+    <>
+      {/* Create Post Card */}
+      <Card className="bg-gradient-card">
+        <CardHeader>
+          <CardTitle className="text-lg flex items-center space-x-2">
+            <Plus className="h-5 w-5 text-community-primary" />
+            <span>Create New Post</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Textarea
+            placeholder={`What would you like to share in ${isHealthService ? activeTab : serviceName}?`}
+            value={newPost}
+            onChange={(e) => setNewPost(e.target.value)}
+            className="min-h-[100px] resize-none"
+          />
+          
+          <div className="flex items-center justify-between">
+            <Button variant="outline" size="sm">
+              <ImageIcon className="h-4 w-4 mr-2" />
+              Add Image
+            </Button>
+            
+            <Button 
+              onClick={handlePost}
+              disabled={!newPost.trim()}
+              className="bg-community-primary hover:bg-community-primary-hover"
+            >
+              <Send className="h-4 w-4 mr-2" />
+              Post
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Posts Feed */}
+      <div className="space-y-4">
+        {posts.map((post) => (
+          <Card key={post.id} className="bg-gradient-card hover:shadow-card transition-shadow">
+            <CardContent className="p-6">
+              {/* Post Header */}
+              <div className="flex items-start space-x-3 mb-4">
+                <Avatar 
+                  className="cursor-pointer hover:ring-2 hover:ring-community-primary/50 transition-all"
+                  onClick={() => openPrivateChat(post.user.name)}
+                >
+                  <AvatarImage src={post.user.avatar} />
+                  <AvatarFallback className="bg-gradient-primary text-white">
+                    {post.user.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+                
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <h3 
+                      className="font-semibold cursor-pointer hover:text-community-primary transition-colors"
+                      onClick={() => openPrivateChat(post.user.name)}
+                    >
+                      {post.user.name}
+                    </h3>
+                    <span className="text-sm text-muted-foreground">
+                      {post.timestamp}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Post Content */}
+              <p className="text-foreground mb-4 leading-relaxed">
+                {post.content}
+              </p>
+
+              {/* Post Image */}
+              {post.image && (
+                <div className="mb-4">
+                  <img 
+                    src={post.image} 
+                    alt="Post content"
+                    className="rounded-lg max-w-full h-auto"
+                  />
+                </div>
+              )}
+
+              {/* Post Actions */}
+              <div className="flex items-center justify-between pt-4 border-t">
+                <div className="flex items-center space-x-6">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500">
+                    <Heart className="h-4 w-4 mr-1" />
+                    {post.likes}
+                  </Button>
+                  
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-community-primary">
+                    <MessageCircle className="h-4 w-4 mr-1" />
+                    {post.comments}
+                  </Button>
+                  
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-community-primary">
+                    <Share2 className="h-4 w-4 mr-1" />
+                    Share
+                  </Button>
+                </div>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => openPrivateChat(post.user.name)}
+                  className="hover:bg-community-primary hover:text-white"
+                >
+                  Message
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Load More */}
+      <div className="flex justify-center pt-6">
+        <Button variant="outline" className="hover:bg-community-primary hover:text-white">
+          Load More Posts
+        </Button>
+      </div>
+    </>
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -124,127 +316,38 @@ export function ServiceInterface({ serviceName, serviceType, onBack, appliedFilt
 
       <div className="container py-6 px-6">
         <div className="max-w-2xl mx-auto space-y-6">
-          {/* Create Post Card */}
-          <Card className="bg-gradient-card">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center space-x-2">
-                <Plus className="h-5 w-5 text-community-primary" />
-                <span>Create New Post</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Textarea
-                placeholder={`What would you like to share in ${serviceName}?`}
-                value={newPost}
-                onChange={(e) => setNewPost(e.target.value)}
-                className="min-h-[100px] resize-none"
-              />
-              
-              <div className="flex items-center justify-between">
-                <Button variant="outline" size="sm">
-                  <ImageIcon className="h-4 w-4 mr-2" />
-                  Add Image
-                </Button>
-                
-                <Button 
-                  onClick={handlePost}
-                  disabled={!newPost.trim()}
-                  className="bg-community-primary hover:bg-community-primary-hover"
-                >
-                  <Send className="h-4 w-4 mr-2" />
-                  Post
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          {isHealthService ? (
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="auto" className="flex items-center space-x-2">
+                  <Car className="h-4 w-4" />
+                  <span>Auto Services</span>
+                </TabsTrigger>
+                <TabsTrigger value="health" className="flex items-center space-x-2">
+                  <HealthIcon className="h-4 w-4" />
+                  <span>Health</span>
+                </TabsTrigger>
+                <TabsTrigger value="legal" className="flex items-center space-x-2">
+                  <Scale className="h-4 w-4" />
+                  <span>Legal</span>
+                </TabsTrigger>
+              </TabsList>
 
-          {/* Posts Feed */}
-          <div className="space-y-4">
-            {mockPosts.map((post) => (
-              <Card key={post.id} className="bg-gradient-card hover:shadow-card transition-shadow">
-                <CardContent className="p-6">
-                  {/* Post Header */}
-                  <div className="flex items-start space-x-3 mb-4">
-                    <Avatar 
-                      className="cursor-pointer hover:ring-2 hover:ring-community-primary/50 transition-all"
-                      onClick={() => openPrivateChat(post.user.name)}
-                    >
-                      <AvatarImage src={post.user.avatar} />
-                      <AvatarFallback className="bg-gradient-primary text-white">
-                        {post.user.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <h3 
-                          className="font-semibold cursor-pointer hover:text-community-primary transition-colors"
-                          onClick={() => openPrivateChat(post.user.name)}
-                        >
-                          {post.user.name}
-                        </h3>
-                        <span className="text-sm text-muted-foreground">
-                          {post.timestamp}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+              <TabsContent value="auto" className="space-y-6">
+                {renderPostsSection(mockPostsByTab.auto)}
+              </TabsContent>
 
-                  {/* Post Content */}
-                  <p className="text-foreground mb-4 leading-relaxed">
-                    {post.content}
-                  </p>
+              <TabsContent value="health" className="space-y-6">
+                {renderPostsSection(mockPostsByTab.health)}
+              </TabsContent>
 
-                  {/* Post Image */}
-                  {post.image && (
-                    <div className="mb-4">
-                      <img 
-                        src={post.image} 
-                        alt="Post content"
-                        className="rounded-lg max-w-full h-auto"
-                      />
-                    </div>
-                  )}
-
-                  {/* Post Actions */}
-                  <div className="flex items-center justify-between pt-4 border-t">
-                    <div className="flex items-center space-x-6">
-                      <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500">
-                        <Heart className="h-4 w-4 mr-1" />
-                        {post.likes}
-                      </Button>
-                      
-                      <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-community-primary">
-                        <MessageCircle className="h-4 w-4 mr-1" />
-                        {post.comments}
-                      </Button>
-                      
-                      <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-community-primary">
-                        <Share2 className="h-4 w-4 mr-1" />
-                        Share
-                      </Button>
-                    </div>
-
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => openPrivateChat(post.user.name)}
-                      className="hover:bg-community-primary hover:text-white"
-                    >
-                      Message
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Load More */}
-          <div className="flex justify-center pt-6">
-            <Button variant="outline" className="hover:bg-community-primary hover:text-white">
-              Load More Posts
-            </Button>
-          </div>
+              <TabsContent value="legal" className="space-y-6">
+                {renderPostsSection(mockPostsByTab.legal)}
+              </TabsContent>
+            </Tabs>
+          ) : (
+            renderPostsSection(currentPosts)
+          )}
         </div>
       </div>
     </div>
