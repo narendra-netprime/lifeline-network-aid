@@ -4,10 +4,12 @@ import { Header } from "@/components/Header";
 import { NotificationsSidebar } from "@/components/NotificationsSidebar";
 import { ServiceCard } from "@/components/ServiceCard";
 import { NewsSection } from "@/components/NewsSection";
+import { EventsSection } from "@/components/EventsSection";
 import { ServiceInterface } from "@/components/ServiceInterface";
 import { LocationSettings } from "@/components/LocationSettings";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Home,
   Plane,
@@ -213,8 +215,19 @@ const Index = () => {
               </p>
             </div>
 
-            {/* News Section */}
-            <NewsSection />
+            {/* News and Events Tabs */}
+            <Tabs defaultValue="news" className="mb-8">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="news">Latest News</TabsTrigger>
+                <TabsTrigger value="events">Events & Tickets</TabsTrigger>
+              </TabsList>
+              <TabsContent value="news">
+                <NewsSection />
+              </TabsContent>
+              <TabsContent value="events">
+                <EventsSection />
+              </TabsContent>
+            </Tabs>
 
             {/* Services Grid */}
             <div>
