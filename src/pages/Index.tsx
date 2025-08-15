@@ -1,17 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { NotificationsSidebar } from "@/components/NotificationsSidebar";
 import { ServiceCard } from "@/components/ServiceCard";
 import { NewsSection } from "@/components/NewsSection";
 import { ServiceInterface } from "@/components/ServiceInterface";
 import { LocationSettings } from "@/components/LocationSettings";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
 import {
   Home,
   Plane,
   Scale,
   Tag,
   Gift,
-  Shield
+  Shield,
+  LogIn
 } from "lucide-react";
 
 interface LocationPreferences {
@@ -83,6 +87,8 @@ const services: Service[] = [
 ];
 
 const Index = () => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const [currentView, setCurrentView] = useState<ViewState>('home');
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [locationPreferences, setLocationPreferences] = useState<LocationPreferences>({
@@ -90,6 +96,12 @@ const Index = () => {
     city: "",
     distance: ""
   });
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/auth");
+    }
+  }, [user, loading, navigate]);
 
   const handleServiceClick = (service: Service) => {
     setSelectedService(service);
@@ -109,6 +121,40 @@ const Index = () => {
     setCurrentView('home');
     setSelectedService(null);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-hero flex items-center justify-center p-4">
+        <div className="text-center space-y-6">
+          <h1 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+            Welcome to CommunityHub
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-md">
+            Connect, share, and support your Indian community in the USA
+          </p>
+          <Button 
+            onClick={() => navigate("/auth")} 
+            size="lg"
+            className="bg-community-primary hover:bg-community-primary-hover"
+          >
+            <LogIn className="mr-2 h-5 w-5" />
+            Get Started
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (currentView === 'locationSettings') {
     return (
@@ -188,12 +234,11 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Footer Note */}
+            {/* Welcome Message for Authenticated Users */}
             <div className="text-center mt-12 p-6 bg-gradient-card rounded-lg border">
               <p className="text-sm text-muted-foreground">
-                <strong>Note:</strong> This is a beautiful prototype of your community platform! 
-                To enable full functionality like real-time chat, user authentication, file uploads, 
-                and payment processing, connect to Supabase using the green button in the top right.
+                <strong>Welcome to CommunityHub!</strong> You are now part of the Indian community platform in the USA. 
+                Explore services, connect with community members, and get support for your daily needs.
               </p>
             </div>
           </div>
