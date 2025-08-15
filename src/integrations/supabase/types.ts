@@ -14,7 +14,139 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pricing_plans: {
+        Row: {
+          active: boolean | null
+          created_at: string
+          description: string | null
+          duration_minutes: number
+          id: string
+          price_usd: number
+          provider_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string
+          description?: string | null
+          duration_minutes: number
+          id?: string
+          price_usd: number
+          provider_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          price_usd?: number
+          provider_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pricing_plans_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "service_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      provider_specializations: {
+        Row: {
+          created_at: string
+          id: string
+          provider_id: string | null
+          specialization: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          provider_id?: string | null
+          specialization: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          provider_id?: string | null
+          specialization?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_specializations_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "service_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_providers: {
+        Row: {
+          available: boolean | null
+          bio: string | null
+          company: string | null
+          created_at: string
+          email: string | null
+          experience_years: number | null
+          full_name: string
+          id: string
+          location: string | null
+          phone: string | null
+          profile_image: string | null
+          provider_type: string
+          rating: number | null
+          service_type: string
+          title: string
+          total_reviews: number | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          available?: boolean | null
+          bio?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          experience_years?: number | null
+          full_name: string
+          id?: string
+          location?: string | null
+          phone?: string | null
+          profile_image?: string | null
+          provider_type: string
+          rating?: number | null
+          service_type: string
+          title: string
+          total_reviews?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          available?: boolean | null
+          bio?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          experience_years?: number | null
+          full_name?: string
+          id?: string
+          location?: string | null
+          phone?: string | null
+          profile_image?: string | null
+          provider_type?: string
+          rating?: number | null
+          service_type?: string
+          title?: string
+          total_reviews?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
